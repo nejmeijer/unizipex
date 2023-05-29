@@ -41,7 +41,10 @@ you can now do things like the following in Python:
 ```python
 from unizipex import UNICORNZipExport
 
-data = UNICORNZipExport('chrom_data.zip')
+data = UNICORNZipExport(
+	'chrom_data.zip',
+	#ignore_missing_data=True,
+	)
 # pathlib is also supported
 
 # X and Y data from the first UV sensor, for example

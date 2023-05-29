@@ -24,6 +24,10 @@ class UNICORNZipExport():
 		The default is volume first, which can be changed by providing
 		the class constructor with a reversed `tuple`.
 
+	ignore_missing_data
+		Set this to `True` if the class should just keep going if
+		expected data is not present.
+
 	fractions
 		The volume at which each fractions started (???) and its name.
 
@@ -48,7 +52,8 @@ class UNICORNZipExport():
 	def __init__(
 		self,
 		file_name,
-		data_order=('volume', 'amplitude')
+		data_order=('volume', 'amplitude'),
+		ignore_missing_data=False
 	):
 
 		if 'volume' in data_order and 'amplitude' in data_order:
@@ -56,9 +61,9 @@ class UNICORNZipExport():
 		else:
 			raise ValueError('invalid data order')
 
-		self._load_data(file_name)
+		self._load_data(file_name, ignore_missing_data)
 
-	def _load_data(self, f_name):
+	def _load_data(self, f_name, ignore_missing_data):
 		with ZipFile(f_name) as ar:
 			metadata = 'Chrom.1.Xml'
 			with ar.open(metadata) as mtd:
@@ -70,9 +75,12 @@ class UNICORNZipExport():
 					self.injections = events['Injection']
 					self.messages = events['Logbook']
 				except KeyError as e:
-					raise ValueError(
-							f'exported file "{f_name}" does not include "{e.args[0]}" events'
-						)
+					if ignore_missing_data:
+						pass
+					else:
+						raise ValueError(
+								f'exported file "{f_name}" does not include "{e.args[0]}" events'
+							)
 
 				self.readout = self._get_ro(ar, root)
 
