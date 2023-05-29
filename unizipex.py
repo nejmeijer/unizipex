@@ -63,9 +63,12 @@ class UNICORNZipExport():
 			metadata = 'Chrom.1.Xml'
 			with ar.open(metadata) as mtd:
 				root = et.parse(mtd)
-				self.fractions = self._get_events(root, 'Fraction')
-				self.injections = self._get_events(root, 'Injection')
-				self.messages = self._get_events(root, 'Logbook')
+
+				events = self._get_events(root)
+				self.fractions = events['Fraction']
+				self.injections = events['Injection']
+				self.messages = events['Logbook']
+
 				self.readout = self._get_ro(ar, root)
 
 	class _ReadOut():
@@ -124,23 +127,24 @@ class UNICORNZipExport():
 			}
 			return better_names.get(n, n), None
 
-	def _get_events(self, xml_root, type):
+	def _get_events(self, xml_root):
+		event_per_type = {}
 		for ec in xml_root.iter('EventCurve'):
-			if ec.get('EventCurveType') == type:
-				#breakpoint()
-				events = [
-					(
-						float(e.find('EventVolume').text), 
-						e.find('EventText').text,
-					)
-					for e in ec.iter('Event')
-				]
-		nice = tuple(list(r) for r in zip(*events))
+			events = [
+				(
+					float(e.find('EventVolume').text),
+					e.find('EventText').text,
+				)
+				for e in ec.iter('Event')
+			]
+			nice = tuple(list(r) for r in zip(*events))
+			if self._do[0] != 'volume':
+				nice = reverse(nice)
 
-		if self._do[0] == 'volume':
-			return nice
-		else:
-			return reverse(nice)
+			type = ec.get('EventCurveType')
+
+			event_per_type[type] = nice
+		return event_per_type
 
 	def _decode_ro_buf(self, buf):
 		stop = self._get_padding_start(buf)
