@@ -65,9 +65,14 @@ class UNICORNZipExport():
 				root = et.parse(mtd)
 
 				events = self._get_events(root)
-				self.fractions = events['Fraction']
-				self.injections = events['Injection']
-				self.messages = events['Logbook']
+				try:
+					self.fractions = events['Fraction']
+					self.injections = events['Injection']
+					self.messages = events['Logbook']
+				except KeyError as e:
+					raise ValueError(
+							f'exported file "{f_name}" does not include "{e.args[0]}" events'
+						)
 
 				self.readout = self._get_ro(ar, root)
 
