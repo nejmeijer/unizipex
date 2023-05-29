@@ -58,10 +58,6 @@ class UNICORNZipExport():
 
 		self._load_data(file_name)
 
-	@property
-	def dataorder(self):
-		return self._do
-
 	def _load_data(self, f_name):
 		with ZipFile(f_name) as ar:
 			metadata = 'Chrom.1.Xml'
