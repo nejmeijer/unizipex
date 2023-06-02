@@ -122,8 +122,7 @@ class UNICORNZipExport():
 
 	def _get_ro_units(self, ro_xml):
 		unit_full_names = (n.capitalize() + 'Unit' for n in self._do)
-		ugly_units = (ro_xml.find(fn).text for fn in unit_full_names)
-		return tuple('mL' if u == 'ml' else u for u in ugly_units)
+		return (ro_xml.find(fn).text for fn in unit_full_names)
 
 	@staticmethod
 	def _correct_curve_name(n):
