@@ -29,7 +29,7 @@ class UNICORNZipExport():
 		expected data is not present.
 
 	fractions
-		The volume at which each fractions started (???) and its name.
+		The volume at which each fraction begins and corresponding code.
 
 	injections
 		The volume and name of injections of material.
